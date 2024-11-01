@@ -8,6 +8,19 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.0",
-    "react-router-dom": "^6.27.0"
-  }
+    "react-router-dom": "^6.27.0",
+    "proxy": "http://localhost:5000"
+  },
+
+  "name": "gerenciador-de-patrimonio-",
+  "description": "O projeto de Gerenciamento de Patrimônio Universitário é uma solução para auxiliar na administração e controle de bens e ativos da universidade. Através da aplicação, será possível registrar, acompanhar, e gerenciar todos os itens patrimoniais da instituição.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon app.js"
+  },
+  "devDependencies": {},
+  "author": "Arthur, Lucas e Guilherme",
+  "license": "ISC"
 }
