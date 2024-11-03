@@ -1,11 +1,12 @@
-// This file sets up and starts the Express server
-import express from 'express';
-import userRoute from './src/routes/user.route.js';
+const express = require('express');
+const userRoute = require('./src/routes/user.route.js');
+
 
 const app = express();
+//Habilita o uso do json
+app.use(express.json());
 app.use('/user', userRoute);
 const port = 3000;
 
-app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
 
 app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));

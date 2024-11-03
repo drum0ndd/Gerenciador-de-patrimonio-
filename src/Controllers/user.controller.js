@@ -1,8 +1,9 @@
-//EXEMPLO DE CONTROLLER
+const create = (req, res) => {
+    const user = req.body;
 
-const soma = (req, res) => {
-    const soma = 2 + 2;
-    res.send({soma: "soma"});
-}
+    res.json("Hello")
 
-module.exports = {soma};
+    console.log(user);
+};
+
+module.exports = {create};
