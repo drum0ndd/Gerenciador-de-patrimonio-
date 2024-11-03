@@ -1,12 +1,11 @@
-const express = require('express');
-const userRouter = require('./src/routes/user.router');
+// This file sets up and starts the Express server
+import express from 'express';
+import userRoute from './src/routes/user.route.js';
+
 const app = express();
+app.use('/user', userRoute);
+const port = 3000;
 
-app.use('/user', userRouter);
+app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
 
-//Rota
-//htpp (get, post, put, path, delete)
-//nome
-//Function (callback)
-
-app.listen(3000);
+app.listen(port, () => console.log(`Servidor rodando na porta ${port}`));
