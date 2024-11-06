@@ -1,12 +1,15 @@
 const mongoose = require('mongoose');
-const PessoaSchema = require('./Pessoa');
 
 const UserSchema = new mongoose.Schema({
-    matricula: { 
-        type: String, 
-        required: true 
+    nome: {
+        type: String,
+        required: true
     },
-    password: { 
+    sigla_curso: {
+        type: String,
+        required: true
+    },
+    matricula: { 
         type: String, 
         required: true 
     },
@@ -14,9 +17,12 @@ const UserSchema = new mongoose.Schema({
         type: String, 
         required: true 
     },
-    }, 
-{
-    timestamps: true
+    senha: {
+        type: String,
+        required: true
+    }
 });
+
+const User = mongoose.model('User', UserSchema);
 
 module.exports = mongoose.model('User', UserSchema);
