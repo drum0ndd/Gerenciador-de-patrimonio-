@@ -9,7 +9,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.0",
     "react-router-dom": "^6.27.0",
-    "proxy": "http://localhost:5000"
+    "proxy": "http://localhost:3000"
   },
 
   "name": "gerenciador-de-patrimonio-",
