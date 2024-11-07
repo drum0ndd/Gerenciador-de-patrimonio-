@@ -58,6 +58,7 @@ const DeleteUserbyId = async (req, res) => {
         return send.status(404).send({ message: "Usuário não encontrado no banco de dados"});
     }
 
+    await userService.DeleteService(id);
     res.send({ message: "Usuário deletado com sucesso"});
 }
 
