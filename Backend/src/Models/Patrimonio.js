@@ -7,8 +7,6 @@ const PatrimonioSchema = new mongoose.Schema({
     estado: { type: String, enum: ['novo', 'usado', 'danificado'], required: true },
     dataRegistro: { type: Date, required: true },
     descricao: { type: String, required: false },
-}, {
-    timestamps: true // cria automaticamente campos "createdAt" e "updatedAt"
 });
 
 // Exportando o modelo baseado no schema para ser usado em outras partes do código

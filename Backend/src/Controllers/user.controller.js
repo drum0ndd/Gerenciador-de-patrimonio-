@@ -1,37 +1,64 @@
-const userService = require('../services/user.service');
+const userService = require("../services/user.service");
 
 const create = async (req, res) => {
-    const {nome, sigla_curso, matricula, tipo_egresso, senha} = req.body;
+  const { nome, sigla_curso, matricula, tipo_egresso, senha } = req.body;
 
-    if (
-        !nome || 
-        !sigla_curso || 
-        !matricula || 
-        !senha ||
-        !tipo_egresso
-    ) 
-    {
-        return res.status(400).json({message: 'All fields are required'});
+  if (!nome || !sigla_curso || !matricula || !senha || !tipo_egresso) {
+    res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (userService.findAllService({matricula})) {
+    return res.status(400).json({ message: "Usuário já cadastrado"});
     }
 
-    const user = await userService.create(req.body);
+  const user = await userService.createService(req.body);
 
-    if (!user) {
-        return res.status(500).json({message: 'Failed to create user'});
-    }
+  if (!user) {
+    return res.status(400).json({ message: "Failed to create user" });
+  }
 
-
-    res.status(201).send({
-        message: 'User created',
-        user: {
-            id: user._id,
-            nome,
-            sigla_curso,
-            matricula,
-            tipo_egresso,
-            senha
-        },
-    });   
+  res.status(201).send({
+    message: "User created",
+    user: {
+      id: user._id,
+      nome,
+      sigla_curso,
+      matricula,
+      tipo_egresso,
+      senha,
+    },
+  });
 };
 
-module.exports = {create};
+const findAll = async (req, res) => {
+  const users = await userService.findAllService();
+
+  if (users.length === 0) {
+    return res.status(404).send({ message: "Não há usuários cadastrados" });
+  }
+  res.send(users);
+};
+
+const findById = async (req, res) => {
+  const id = req.params.id;
+  const user = await userService.findByIdService(id);
+
+  if (!user) {
+    return res.status(404).send({ message: "User not found" });
+  }
+
+  res.send(user);
+};
+
+const DeleteUserbyId = async (req, res) => {
+    const id = req.params.id;
+    const user = await userService.findByIdService(id);
+
+    if (!user) {
+        return send.status(404).send({ message: "Usuário não encontrado no banco de dados"});
+    }
+
+    res.send({ message: "Usuário deletado com sucesso"});
+}
+
+module.exports = { create, findAll, findById, DeleteUserbyId};

@@ -1,9 +1,8 @@
 const express = require('express');
-const app = express();
 const connectDatabase = require("./Backend/src/database/db.js")
-
 const userRoute = require('./Backend/src/routes/user.route.js');
 
+const app = express();
 const port = 3000;
 
 connectDatabase()
