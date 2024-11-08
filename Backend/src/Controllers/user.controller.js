@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const userService = require("../services/user.service");
 
 const create = async (req, res) => {
@@ -60,6 +61,43 @@ const DeleteUserbyId = async (req, res) => {
 
     await userService.DeleteService(id);
     res.send({ message: "Usuário deletado com sucesso"});
-}
+};
 
-module.exports = { create, findAll, findById, DeleteUserbyId};
+const UpdateUserById = async (req, res) => {
+  const { nome, sigla_curso, matricula, tipo_egresso, senha } = req.body;
+
+  if (!nome && !sigla_curso && !matricula && !senha && !tipo_egresso) {
+    res.status(400).json({ message: "All fields are required" });
+  }
+
+  const id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).send({ message: "Id inválido"});
+  }
+
+  const user = await userService.findByIdService(id);
+
+  if (!user) {
+    return res.status(400).send({ message: "User não encontrado"});
+  }
+
+  await userService.UpdateService(
+    id,
+    nome,
+    sigla_curso, 
+    matricula, 
+    tipo_egresso,
+    senha
+  );
+
+  res.send({ message: "Usuário atualizado com sucesso!"});
+};
+
+module.exports = { 
+  create, 
+  findAll, 
+  findById, 
+  DeleteUserbyId, 
+  UpdateUserById
+};
