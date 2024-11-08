@@ -42,11 +42,8 @@ const findAll = async (req, res) => {
 
 const findById = async (req, res) => {
   const id = req.params.id;
-  const user = await userService.findByIdService(id);
 
-  if (!user) {
-    return res.status(404).send({ message: "User not found" });
-  }
+  const user = await userService.findByIdService(id);
 
   res.send(user);
 };
@@ -72,15 +69,7 @@ const UpdateUserById = async (req, res) => {
 
   const id = req.params.id;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).send({ message: "Id inválido"});
-  }
-
   const user = await userService.findByIdService(id);
-
-  if (!user) {
-    return res.status(400).send({ message: "User não encontrado"});
-  }
 
   await userService.UpdateService(
     id,
