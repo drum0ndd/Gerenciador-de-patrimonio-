@@ -1,11 +1,13 @@
-const express = require('express');
-const connectDatabase = require("./Backend/src/database/db.js")
-const userRoute = require('./Backend/src/routes/user.route.js');
+// Esses arquivos se referem aos imports basicos para que o server rode
+//As rotas de cada entidade estão na pasta Route, a pasta Controller faz a lógca e a pasta Service está fazendo a conexão com o banco de dados
+import express from 'express';
+import connectDatabase from './Backend/src/database/db.js';
+import userRoute from './Backend/src/routes/user.route.js';
 
-const app = express();
 const port = 3000;
+const app = express();
 
-connectDatabase()
+connectDatabase();
 app.use(express.json());
 app.use("/user", userRoute);
 
