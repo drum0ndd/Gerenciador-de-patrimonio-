@@ -1,17 +1,19 @@
-const { default: mongoose } = require("mongoose");
-const userService = require("../services/user.service");
+import userService from "../services/user.service.js";
+
 
 const create = async (req, res) => {
-  const { nome, sigla_curso, matricula, tipo_egresso, senha } = req.body;
+  try {const { nome, sigla_curso, matricula, tipo_egresso, senha } = req.body;
 
   if (!nome || !sigla_curso || !matricula || !senha || !tipo_egresso) {
-    res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: "All fields are required" });
   }
 
-  if (userService.findAllService({matricula})) {
+  const existingUser = await userService.findAllService();
+  if (existingUser.some(user => user.matricula === matricula)) {
     return res.status(400).json({ message: "Usuário já cadastrado"});
     }
-
+  
+  //Criação de fato do usuário
   const user = await userService.createService(req.body);
 
   if (!user) {
@@ -29,7 +31,12 @@ const create = async (req, res) => {
       senha,
     },
   });
-};
+} catch (err) {
+    res.status(500).send({ message: err.message });
+}
+
+}
+;
 
 const findAll = async (req, res) => {
   const users = await userService.findAllService();
@@ -41,10 +48,7 @@ const findAll = async (req, res) => {
 };
 
 const findById = async (req, res) => {
-  const id = req.params.id;
-
-  const user = await userService.findByIdService(id);
-
+  const user = await req.user;
   res.send(user);
 };
 
@@ -83,10 +87,4 @@ const UpdateUserById = async (req, res) => {
   res.send({ message: "Usuário atualizado com sucesso!"});
 };
 
-module.exports = { 
-  create, 
-  findAll, 
-  findById, 
-  DeleteUserbyId, 
-  UpdateUserById
-};
+export default { create, findAll, findById, DeleteUserbyId, UpdateUserById};
