@@ -1,8 +1,10 @@
 // Esses arquivos se referem aos imports basicos para que o server rode
-//As rotas de cada entidade estão na pasta Route, a pasta Controller faz a lógca e a pasta Service está fazendo a conexão com o banco de dados
+//As rotas de cada entidade(model) estão na pasta Route, a pasta Controller faz a lógca e a pasta Service está fazendo a conexão com o banco de dados
 import express from 'express';
 import connectDatabase from './Backend/src/database/db.js';
 import userRoute from './Backend/src/routes/user.route.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const port = 3000;
 const app = express();
