@@ -12,7 +12,8 @@ const UserSchema = new mongoose.Schema({
     },
     matricula: { 
         type: String, 
-        required: true 
+        required: true,
+        unique: true
     },
     tipo_egresso: { 
         type: String, 
