@@ -1,4 +1,3 @@
-const { create } = require("../Models/User");
 const EspacoUFSCService = require("../services/user.service");
 
 const Create = async (req, res) => {
@@ -45,11 +44,12 @@ const findAll = async (req, res) => {
 };
 
 const findById = async (req, res) => {
-    const id = req.id; //vindo do global middleware.
+    const espacoUFSC = await req.espacoUFSC;
+    if (!espacoUFSC) {
+        return res.status(404).send({ message: "Espaço UFSC não encontrado no banco de dados" });
+    }
+    res.send(espacoUFSC);
 
-    const EspacoUFSC = await EspacoUFSCService.findByIdService(id);
-
-    res.send(EspacoUFSC);
 };
 
 const DeleteEspacoUFSCbyId = async (req, res) => {
@@ -83,12 +83,20 @@ const UpdateEspacoUFSCById = async (req, res) => {
     
     const id = req.params.id;
 
+    const EspacoUFSC = await EspacoUFSCService.findByIdService(id);
 
+    await EspacoUFSCService.UpdateService(
+        id,
+        nome,
+        descricao,
+        responsavel,
+        patrimonio
+    );
 
-}
+    res.send({ message: "Espaço UFSC atualizado com sucesso" });
+};
 
-
-module.exports = {
+export default {
     Create,
     findAll,
     findById,

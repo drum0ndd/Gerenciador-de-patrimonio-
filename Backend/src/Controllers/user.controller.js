@@ -5,7 +5,7 @@ const create = async (req, res) => {
   try {const { nome, sigla_curso, matricula, tipo_egresso, senha } = req.body;
 
   if (!nome || !sigla_curso || !matricula || !senha || !tipo_egresso) {
-    return res.status(400).json({ message: "All fields are required" });
+    return res.status(400).json({ message: "Todos os campos são obrigatórios" });
   }
 
   const existingUser = await userService.findAllService();
@@ -49,6 +49,9 @@ const findAll = async (req, res) => {
 
 const findById = async (req, res) => {
   const user = await req.user;
+  if (!user) {
+    return res.status(404).send({ message: "Usuário não encontrado no banco de dados" });
+  }
   res.send(user);
 };
 
@@ -68,7 +71,7 @@ const UpdateUserById = async (req, res) => {
   const { nome, sigla_curso, matricula, tipo_egresso, senha } = req.body;
 
   if (!nome && !sigla_curso && !matricula && !senha && !tipo_egresso) {
-    res.status(400).json({ message: "All fields are required" });
+    res.status(400).json({ message: "Todos os campos são necessários." });
   }
 
   const id = req.params.id;
@@ -87,4 +90,10 @@ const UpdateUserById = async (req, res) => {
   res.send({ message: "Usuário atualizado com sucesso!"});
 };
 
-export default { create, findAll, findById, DeleteUserbyId, UpdateUserById};
+export default { 
+  create, 
+  findAll, 
+  findById, 
+  DeleteUserbyId, 
+  UpdateUserById
+};
