@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-
+import mongoose from 'mongoose';
 // Definindo o schema do patrimônio
 const PatrimonioSchema = new mongoose.Schema({
     nome: { type: String, required: true },
+    id: { type: String, required: true },
     unidade: { type: String, required: true },
     estado: { type: String, enum: ['novo', 'usado', 'danificado'], required: true },
     dataRegistro: { type: Date, required: true },
@@ -10,4 +10,5 @@ const PatrimonioSchema = new mongoose.Schema({
 });
 
 // Exportando o modelo baseado no schema para ser usado em outras partes do código
-module.exports = mongoose.model('Patrimonio', PatrimonioSchema);
+const Patrimonio = mongoose.model("Patrimonio", PatrimonioSchema);
+export default Patrimonio;
