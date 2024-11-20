@@ -1,5 +1,5 @@
 import Bcrypt from "bcryptjs"
-import {loginService} from "../Services/Auth.Service.js"
+import {loginService, generateToken} from "../services/Auth.Service.js";
 
 const login = async (req, res) => {
     const { matricula, senha } = req.body;
@@ -13,7 +13,9 @@ const login = async (req, res) => {
             return res.status(400).send({message: "Senha ou matricula não encontrado."});
         }
 
-        res.send({message: "Login ok."});
+        const token = generateToken(user.id);
+
+        res.send({Token: token});
      }  catch (error) {
             res.status(500).send({message: "Erro no servidor"});
      }
@@ -21,4 +23,6 @@ const login = async (req, res) => {
 
 // User: {matricula: };
 // User: {senha: };
-export { login };
+export { 
+    login,
+};
