@@ -1,6 +1,5 @@
 import EspacoUFSCService from "../services/espacoUFSC.service.js";
-import userService from "../services/user.service.js";
-import mongoose from "mongoose";
+import { isProfessor } from "../middlewares/global.middlewares.js";
 
 const Create = async (req, res) => {
 
@@ -21,9 +20,11 @@ const Create = async (req, res) => {
             return res.status(400).json({message: "Preencha todas as informações!"});
         };
 
-        const validProfessor = userService.isUserProfessorByMatricula(matricula_responsavel);
-        if (validProfessor === false){
-            return res.status(400).json({message: "Usuário não é professor"});
+        // Valida o professor
+        try {
+            await isProfessor(matricula_responsavel);
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
         }
 
         const existingEspacoUFSC = await EspacoUFSCService.findAllService();
@@ -88,7 +89,7 @@ const DeleteEspacoUFSCbyId = async (req, res) => {
     const EspacoUFSC = await EspacoUFSCService.findByIdService(id_espaco);
 
     if (!EspacoUFSC) {
-        return send.status(404).send({ message: "Espaço não encontrado no banco de dados"});
+        return res.status(404).send({ message: "Espaço não encontrado no banco de dados"});
     }
 
     await EspacoUFSCService.DeleteEspacoUFSCbyId(id_espaco);

@@ -81,39 +81,16 @@ export const validEspacoUFSC = async (req, res, next) => {
         }
 };
 
-export const validProfessor = async (req, res, next) => {
-    try {
-        const ProfessorCorreto = await userService.findByIdService(id);
-        if (!ProfessorCorreto){
-            return res.status(400).json({ message: "Professor não encontrado"});
+export const isProfessor = async (matricula) => {
+        const user = userService.isUserProfessorByMatricula(matricula);
+    
+        if (!user) {
+            throw new Error("Usuário não encontrado.");
         }
-
-        //Verifica se o professor é um professor  mesmo
-        if (ProfessorCorreto.tipo_egresso === 2){
-            return res.status(400).json({ message: "O usuário informado não é um professor"});
-        }
-        next();
-    } catch (err) {
-        res.status(500).send({ message: err.message });
-    }
+    
+        return user; // Retorna o usuário válido
 };
-
-export const validAluno = async (req, res, next) => {
-    try{
-        const AlunoCorreto = await userService.findByIdService(id);
-        if (!AlunoCorreto){
-            return res.status(400).json({ message: "Aluno não encontrado"});
-        }
-
-        //Verifica se o aluno é um aluno mesmo
-        if (AlunoCorreto.tipo_egresso !== 1){
-            return res.status(400).json({ message: "O usuário informado não é um aluno"});
-        }
-    } catch (err) {
-        res.status(500).send({ message: err.message });
-    }
-
-};
+    
 
 export default {
     validId, 
@@ -121,6 +98,5 @@ export default {
     validPatrimonio,
     validEmprestimo,
     validEspacoUFSC,
-    validProfessor,
-    validAluno,
+    isProfessor,
 };
