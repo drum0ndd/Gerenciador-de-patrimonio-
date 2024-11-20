@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import userService from "../services/user.service.js";
 import PatrimonioService from "../services/Patrimonio.Service.js";
 import EmprestimoService from "../Services/Emprestimo.service.js";
-import EspacoUFSC from "../services/EspacoUFSC.service.js";
+import EspacoUFSC from "../services/espacoUFSC.service.js";
 
 export const validId = (req, res, next) => {
     const id = req.params.id;
@@ -67,18 +67,18 @@ export const validEmprestimo = async (req, res, next) => {
 export const validEspacoUFSC = async (req, res, next) => {
     try {const id = req.params.id;
 
-    const espacoUFSC = await EspacoUFSC.findByIdService(id);
+        const espacoUFSC = await EspacoUFSC.findByIdService(id);
 
-    if (!espacoUFSC) {
-        return res.status(404).send({ message: "EspacoUFSC não encontrado!" });
-    }
+        if (!espacoUFSC) {
+            return res.status(404).send({ message: "EspacoUFSC não encontrado!" });
+        }
 
-    req.id = id 
-    req.espacoUFSC = espacoUFSC;
+        req.id = id 
+        req.espacoUFSC = espacoUFSC;
 
-    next();} catch (err) {
-        res.status(500).send({ message: err.message });
-    }
+        next();} catch (err) {
+            res.status(500).send({ message: err.message });
+        }
 };
 
 export const validProfessor = async (req, res, next) => {

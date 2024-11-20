@@ -2,9 +2,9 @@ import userService from "../services/user.service.js";
 
 
 const create = async (req, res) => {
-  try {const { nome, sigla_curso, matricula, tipo_egresso, senha } = req.body;
+  try {const { nome, matricula, tipo_egresso, senha } = req.body;
 
-  if (!nome || !sigla_curso || !matricula || !senha || !tipo_egresso) {
+  if (!nome || !matricula || !senha || !tipo_egresso) {
     return res.status(400).json({ message: "Todos os campos são obrigatórios" });
   }
 
@@ -25,7 +25,6 @@ const create = async (req, res) => {
     user: {
       id: user._id,
       nome,
-      sigla_curso,
       matricula,
       tipo_egresso,
       senha,
@@ -68,9 +67,9 @@ const DeleteUserbyId = async (req, res) => {
 };
 
 const UpdateUserById = async (req, res) => {
-  const { nome, sigla_curso, matricula, tipo_egresso, senha } = req.body;
+  const { nome, matricula, tipo_egresso, senha } = req.body;
 
-  if (!nome && !sigla_curso && !matricula && !senha && !tipo_egresso) {
+  if (!nome && !matricula && !senha && !tipo_egresso) {
     res.status(400).json({ message: "Todos os campos são necessários." });
   }
 
@@ -81,7 +80,6 @@ const UpdateUserById = async (req, res) => {
   await userService.UpdateService(
     id,
     nome,
-    sigla_curso, 
     matricula, 
     tipo_egresso,
     senha

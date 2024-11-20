@@ -1,37 +1,62 @@
-const EspacoUFSCService = require("../services/user.service");
+import EspacoUFSCService from "../services/espacoUFSC.service.js";
+import userService from "../services/user.service.js";
+import mongoose from "mongoose";
 
 const Create = async (req, res) => {
 
-    const {
-        nome,
-        descricao,
-        responsavel,
-        patrimonio,
-    } = req.body;
-
-    if (!nome|| 
-        !descricao|| 
-        !responsavel|| 
-        !patrimonio
-    ){
-        res.status(400).json({message: "Preencha todas as informações!"});
-    };
-    
-    if (EspacoUFSCService.findAllService({ nome }) && 
-    EspacoUFSCService.findAllService({ responsavel })) {
-        return res.status(400).json({ message: "Espaço já cadastrado"});
-    }
-
-    res.status(201).send({
-        message: "Novo espaco UFSC foi criado!",
-        EspacoUFSC: {
-            id: EspacoUFSC._id,
-            nome, 
+    try{ const {
+            id_espaco,
+            nome,
             descricao,
-            responsavel,
-            patrimonio
-        },
-    });
+            matricula_responsavel,
+            lista_patrimonio, // não é obrigatório
+            lista_participantes
+        } = req.body;
+
+        if (
+            !id_espaco|| 
+            !nome|| 
+            !descricao|| 
+            !matricula_responsavel)  {
+            return res.status(400).json({message: "Preencha todas as informações!"});
+        };
+
+        const validProfessor = userService.isUserProfessorByMatricula(matricula_responsavel);
+        if (validProfessor === false){
+            return res.status(400).json({message: "Usuário não é professor"});
+        }
+
+        const existingEspacoUFSC = await EspacoUFSCService.findAllService();
+        if (existingEspacoUFSC.some(EspacoUFSC => EspacoUFSC.id_espaco === id_espaco)) {
+            return res.status(400).json({ message: "Espaço UFSC já cadastrado" });
+        };
+
+        const EspacoUFSC = await EspacoUFSCService.CreateService(req.body);
+
+        console.log(EspacoUFSC);
+
+        if (!EspacoUFSC) {
+            return res.status(400).json({ message: "Falha ao criar novo espaço UFSC" });
+        }
+
+        res.status(201).send({
+            message: "Novo espaco UFSC foi criado!",
+            EspacoUFSC: {
+                id_espaco: EspacoUFSC._id,
+                nome, 
+                descricao,
+                matricula_responsavel,
+                lista_patrimonio,
+            },
+
+                EspacoUFSC,
+                lista_participantes: [...lista_participantes, matricula_responsavel]
+            });
+
+        
+        } catch (err) {;
+        res.status(500).send({ message: err.message });
+    }
 };
 
 const findAll = async (req, res) => {
@@ -44,39 +69,48 @@ const findAll = async (req, res) => {
 };
 
 const findById = async (req, res) => {
-    const espacoUFSC = await req.espacoUFSC;
-    if (!espacoUFSC) {
-        return res.status(404).send({ message: "Espaço UFSC não encontrado no banco de dados" });
+    const id_espaco = await req.espacoUFSC;
+    if (!id_espaco) {
+        return res.status(404).send({ message: "preencha o id que desejas." });
     }
-    res.send(espacoUFSC);
+
+    const existingEspacoUFSC = await EspacoUFSCService.findByIdService(id_espaco);
+    if (!existingEspacoUFSC) {
+        return res.status(404).send({ message: "Espaco UFSC não encontrado no banco de dados." });
+    }
+
+    res.send(existingEspacoUFSC);
 
 };
 
 const DeleteEspacoUFSCbyId = async (req, res) => {
-    const id = req.params.id;
-    const EspacoUFSC = await EspacoUFSCService.findByIdService(id);
+    const id_espaco = req.params.id;
+    const EspacoUFSC = await EspacoUFSCService.findByIdService(id_espaco);
 
     if (!EspacoUFSC) {
         return send.status(404).send({ message: "Espaço não encontrado no banco de dados"});
     }
 
-    await EspacoUFSCService.DeleteService(id);
+    await EspacoUFSCService.DeleteEspacoUFSCbyId(id_espaco);
     res.send({ message: "Espaço deletado com sucesso"});
 };
 
 const UpdateEspacoUFSCById = async (req, res) => {
     const {
+        id_espaco,
         nome,
         descricao,
-        responsavel,
-        patrimonio,
+        matricula_responsavel,
+        lista_patrimonio,
+        lista_participantes,
     } = req.body;
 
-    if (!nome|| 
+    if (
+        !id_espaco||
+        !nome|| 
         !descricao|| 
-        !dataCriacao|| 
-        !responsavel|| 
-        !patrimonio
+        !matricula_responsavel|| 
+        !lista_participantes
     ){
         res.status(400).json({message: "Preencha todas as informações!"});
     };
@@ -86,11 +120,12 @@ const UpdateEspacoUFSCById = async (req, res) => {
     const EspacoUFSC = await EspacoUFSCService.findByIdService(id);
 
     await EspacoUFSCService.UpdateService(
-        id,
+        id_espaco,
         nome,
         descricao,
-        responsavel,
-        patrimonio
+        matricula_responsavel,
+        lista_patrimonio,
+        lista_participantes,
     );
 
     res.send({ message: "Espaço UFSC atualizado com sucesso" });

@@ -6,17 +6,13 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    sigla_curso: {
-        type: String,
-        required: true
-    },
     matricula: { 
-        type: String, 
+        type: Number, 
         required: true,
         unique: true
     },
     tipo_egresso: { 
-        type: String, 
+        type: Number, 
         required: true 
     },
     senha: {

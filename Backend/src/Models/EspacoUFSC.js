@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
-import User from '../Models/User.js';
 
 const EspacoUFSCSchema = new mongoose.Schema({
     id_espaco:
     {
-        type: String,
+        type: Number,
         required: true
     },
     nome: 
@@ -19,23 +18,20 @@ const EspacoUFSCSchema = new mongoose.Schema({
         required: false 
     },
 
-    responsavel: 
+    matricula_responsavel: 
     { 
-        type: mongoose.Schema.Types.ObjectId,  // Referência a um professor (user = 1) responsável pela unidade
-        ref: 'User',
+        type: Number,  // Necessário verificar se a matricula é de um professor no momento da criação
         required: true 
     }, 
 
     lista_patrimonio: 
-    [{ type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Patrimonio', 
-        required: false 
+    [{ type: Number, 
+        required: false  
     }],
 
     lista_participantes: 
-    [{ type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User', 
-        required: true 
+    [{ type: Number, 
+        required: false //pelo menos o professor tem q estar no espaco, fazer uma maneirq que ao criar um espaco o professor seja adicionado automaticamente
     }],
 });
 
