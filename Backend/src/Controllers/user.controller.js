@@ -38,12 +38,50 @@ const create = async (req, res) => {
 ;
 
 const findAll = async (req, res) => {
-  const users = await userService.findAllService();
+
+  let { limit, offset } = req.query;
+
+  limit = Number(limit);
+  offset = Number(offset);
+
+  if (!limit) {
+    limit = 10;
+  }
+
+  if (!offset) {
+    offset = 0;
+  }
+
+  const users = await userService.findAllService(offset, limit);
+  const total = await userService.contauserService();
+
+  // Paginação de fato dos usuarios
+  const next = offset + limit;
+  const nextUrl = next < total ? `${currentUrl}?limit=${limit}&offset=${next}` : null;
+
+  const previous = offset - limit < 0 ? null : offset - limit;
+  const previousUrl = previous !== null ? `${currentUrl}?limit=${limit}&offset=${previous}` : null;
+
 
   if (users.length === 0) {
     return res.status(404).send({ message: "Não há usuários cadastrados" });
   }
-  res.send(users);
+
+  //Retorna além dos usuários, as informações de paginação para o cliente (froontend)
+  res.send({
+    nextUrl,
+    previousUrl,
+    limit,
+    offset,
+    total,
+
+    results: users.map(userItem => ({
+      id: userItem._id,
+      nome: userItem.nome,
+      matricula: userItem.matricula,
+      tipo_egresso: userItem.tipo_egresso,
+    }))
+  });
 };
 
 const findById = async (req, res) => {
