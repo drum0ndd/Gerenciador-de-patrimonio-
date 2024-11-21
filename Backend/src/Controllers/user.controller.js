@@ -2,7 +2,7 @@ import userService from "../services/user.service.js";
 
 
 const create = async (req, res) => {
-  try {const { nome, matricula, tipo_egresso, senha } = req.body;
+  try { const { nome, matricula, tipo_egresso, senha } = req.body;
 
   if (!nome || !matricula || !senha || !tipo_egresso) {
     return res.status(400).json({ message: "Todos os campos são obrigatórios" });
@@ -67,23 +67,28 @@ const DeleteUserbyId = async (req, res) => {
 };
 
 const UpdateUserById = async (req, res) => {
-  const { nome, matricula, tipo_egresso, senha } = req.body;
-
-  if (!nome && !matricula && !senha && !tipo_egresso) {
-    res.status(400).json({ message: "Todos os campos são necessários." });
-  }
+  const { nome, senha, sigla_curso } = req.body;
 
   const id = req.params.id;
 
-  const user = await userService.findByIdService(id);
+  if (!nome && !senha && !sigla_curso) {
+    return res.status(400).json({ message: "Informe ao menos um campo para atualizar." });
+  }
+  
 
-  await userService.UpdateService(
-    id,
-    nome,
-    matricula, 
-    tipo_egresso,
-    senha
-  );
+  const user = await userService.findByIdService(id);
+  
+
+  if (!user) {
+    return res.status(404).json({ message: "Usuário não encontrado." });
+  }
+  
+  const updateData = {};
+  if (nome) updateData.nome = nome;
+  if (senha) updateData.senha = senha;
+  if (sigla_curso) updateData.sigla_curso = sigla_curso;
+  
+  await userService.UpdateService(id, updateData);
 
   res.send({ message: "Usuário atualizado com sucesso!"});
 };

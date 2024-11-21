@@ -13,10 +13,12 @@ async function findByIdService(id) {
 }
 const DeleteService = (id) => User.findByIdAndDelete(id);
 
-const UpdateService = (id, nome, matricula, tipo_egresso, senha) => User.findOneAndUpdate(
-    { _id: id },
-    { nome, matricula, tipo_egresso, senha }
-)
+const UpdateService = async (id, updateData) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error("ID inválido");
+  }
+  return await User.findByIdAndUpdate(id, updateData, { new: true });
+};
 
 async function isUserProfessorByMatricula(matricula) {
   // Verifica se existe um usuário com a matrícula e tipo_egresso igual a 2

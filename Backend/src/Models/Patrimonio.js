@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 // Definindo o schema do patrimônio
 const PatrimonioSchema = new mongoose.Schema({
     nome: { type: String, required: true },
-    id: { type: String, required: true },
-    unidade: { type: String, required: true },
+    id: { type: Number, required: true },
+    id_espaco_ufsc: { type: Number, required: true },
     estado: { type: String, enum: ['novo', 'usado', 'danificado'], required: true },
     dataRegistro: { type: Date, required: true },
     descricao: { type: String, required: false },

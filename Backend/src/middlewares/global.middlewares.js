@@ -90,7 +90,6 @@ export const isProfessor = async (matricula) => {
     
         return user; // Retorna o usuário válido
 };
-    
 
 export default {
     validId, 
