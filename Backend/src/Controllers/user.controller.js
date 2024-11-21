@@ -71,6 +71,7 @@ const DeleteUserbyId = async (req, res) => {
     res.send({ message: "Usuário deletado com sucesso"});
 };
 
+// TO DO: Implementar a AUTORIZAÇÃO DE ATUALIZAÇÃO de usuário APENAS PASSANDO A SENHA ANTIGA
 const UpdateUserById = async (req, res) => {
   const { nome, senha, sigla_curso } = req.body;
 
