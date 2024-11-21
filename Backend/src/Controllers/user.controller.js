@@ -47,11 +47,16 @@ const findAll = async (req, res) => {
 };
 
 const findById = async (req, res) => {
-  const user = await req.user;
-  if (!user) {
-    return res.status(404).send({ message: "Usuário não encontrado no banco de dados" });
+  try {
+    const user = await req.user;
+    if (!user) {
+      return res.status(404).send({ message: "Usuário não encontrado no banco de dados" });
+    }
+    res.send(user);
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
-  res.send(user);
+
 };
 
 const DeleteUserbyId = async (req, res) => {
