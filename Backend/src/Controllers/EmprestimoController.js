@@ -1,31 +1,32 @@
 import EmprestimoService from '../Services/Emprestimo.service.js';
 import userService from '../services/user.service.js';
+import all from '../middlewares/global.middlewares.js';
 
 const create = async (req, res) => {
     try {const { 
         id,
-        unidade, 
-        professor, 
-        aluno, 
-        patrimonio, 
-        dataAquisicao, 
-        dataRetorno, 
+        espacoUFSC, 
+        matricula_professor, 
+        matricula_aluno, 
+        codigo_patrimonio, 
+        data_registro,  
         descricao // não obrigatório
     } = req.body;
 
     if (
         !id || 
-        !unidade || 
-        !professor || 
-        !aluno || 
-        !patrimonio || 
-        !dataAquisicao
-        ) {
+        !espacoUFSC || 
+        !matricula_professor || 
+        !matricula_aluno || 
+        !codigo_patrimonio || 
+        !data_registro ||
+        !descricao)
+        {
         return res.status(400).json({ message: "Com exceção de descrição, todos os outros campos são obrigatórios" });
     }
     
 
-    const existingEmprestimo = await EmprestimoService.findAllService();
+    const existingEmprestimo = await EmprestimoService.findAllByEspacoUFSCService();
     if (existingEmprestimo.some(emprestimo => emprestimo.patrimonio.id === patrimonio.id)) {
         return res.status(400).json({ message: "O patrimonio informado já foi emprestado"});
     }
@@ -40,15 +41,14 @@ const create = async (req, res) => {
 
     res.status(201).send({
         message: "Emprestimo criado",
-        emprestimo: {
+        emprestimo: { 
             id: emprestimo._id,
-            unidade,
-            professor,
-            aluno,
-            patrimonio,
-            dataAquisicao,
-            dataRetorno,
-            descricao,
+            espacoUFSC, 
+            matricula_professor, 
+            matricula_aluno, 
+            codigo_patrimonio, 
+            data_registro,  
+            descricao
         },
     });
         } catch (err) {
@@ -56,8 +56,8 @@ const create = async (req, res) => {
         }
     };
     
-    const findAll = async (req, res) => {
-        const emprestimos = await EmprestimoService.findAllService();
+    const findAllByEspacoUFSC = async (req, res) => {
+        const emprestimos = await EmprestimoService.findAllByEspacoUFSCService();
 
         if (emprestimo.length == 0) {
             return res.status(404).send({ message: "Não há emprestimos cadastrados" });
@@ -86,40 +86,45 @@ const create = async (req, res) => {
         res.send({ message: "Emprestimo deletado com sucesso" });
     };
 
-    
+    const EmprestimoByUserAluno = async (req, res) => {
+        const dados = req.body;
 
-    const UpdateEmprestimobyId = async (req, res) => {
-        const {nome, 
-            unidade, 
-            estado, 
-            dataRegistro, 
-            descricao} = req.body;
+        const aluno_matricula = dados.matricula
 
-        if (!nome && !unidade && !estado && !dataRegistro) {
-            res.status(400).json({ message: "Todos os campos são necessários." });
+        const existingAluno = userService.findByIdService(aluno_matricula);
+
+        if (!existingAluno) {
+            res.send("Matricula do aluno incorreta.")
+        };
+
+            //valido se a sala existe
+        if (!validEspacoUFSC) {
+            return res.status(404).send({ message: "Espaço UFSC não encontrado no banco de dados" });
         }
 
-        const id = req.params.id;
+        const ExistingEmprestimoAluno = await EmprestimoService.EmprestimoByAlunoService(aluno_matricula);
 
-        const emprestimo = await EmprestimoService.findByIdService(id);
+        if (!aluno_matricula){
+            res.status(400).send("Esse aluno não possui emprestimos.")
+        }
 
-        await EmprestimoService.UpdateService(
-            id,
-            nome,
-            unidade,
-            estado,
-            dataRegistro,
-            descricao
-        );
+        res.send({
+            results: emprestimo.map(emprestimoItem => ({
+            id: emprestimoItem._id,
+            espacoUFSC: emprestimoItem.espacoUFSC,
+            matricula_professor: emprestimoItem.professor,
+            matricula_aluno: emprestimoItem.aluno,
+            codigo_patrimonio: emprestimoItem.patrimonio,
+            data_registro: emprestimoItem.dataAquisicao,
+            descricao: emprestimoItem.descricao
+    })),
+    });
 
-        res.send({ message: "Emprestimo atualizado com sucesso" });
-
-    };
-
-    export default {
+};
+export default {
         create,
-        findAll,
+        findAllByEspacoUFSC,
         findById,
         DeleteEmprestimobyId,
-        UpdateEmprestimobyId,
-    };
+        EmprestimoByUserAluno,
+};

@@ -8,10 +8,10 @@ const findByIdService = (id) => Patrimonio.findById(id);
 
 const DeleteService = (id) => Patrimonio.findByIdAndDelete(id);
 
-const UpdateService = (id, nome, unidade, estado, dataRegistro, descricao) => 
+const UpdateService = (id, nome, espacoUFSC, estado, dataRegistro, descricao) => 
     Patrimonio.findOneAndUpdate(
         {_id: id},
-        {nome, unidade, estado, dataRegistro, descricao}
+        {nome, espacoUFSC, estado, dataRegistro, descricao}
     );
 
 export default {

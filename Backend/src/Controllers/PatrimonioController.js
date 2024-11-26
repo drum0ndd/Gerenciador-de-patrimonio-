@@ -1,10 +1,10 @@
 import PatrimonioService from '../services/Patrimonio.Service.js';
 
 const create = async (req, res) => {
-    try { const{ nome, id, unidade, estado, dataRegistro, descricao } = req.body;
+    try { const{ nome, id, espacoUFSC, estado, dataRegistro, descricao } = req.body;
 
 
-    if (!nome || !unidade || !estado || !dataRegistro) {
+    if (!nome || !espacoUFSC || !estado || !dataRegistro) {
         return res.status(400).json({message: "Todos os campos são obrigatórios"});
     }
 
@@ -60,7 +60,7 @@ const DeletePatrimoniobyId = async (req, res) => {
 
 const UpdatePatrimoniobyId = async (req, res) => {
     const id = req.params.id;
-    const { nome, unidade, estado, dataRegistro, descricao } = req.body;
+    const { nome, espacoUFSC, estado, dataRegistro, descricao } = req.body;
 
     const patrimonio = await PatrimonioService.findByIdService(id);
 
@@ -68,7 +68,7 @@ const UpdatePatrimoniobyId = async (req, res) => {
         return res.status(404).send({message: "Patrimônio não encontrado no banco de dados"});
     }
 
-    await PatrimonioService.UpdateService(id, nome, unidade, estado, dataRegistro, descricao);
+    await PatrimonioService.UpdateService(id, nome, espacoUFSC, estado, dataRegistro, descricao);
     res.send({message: "Patrimônio atualizado com sucesso"});
 };
 

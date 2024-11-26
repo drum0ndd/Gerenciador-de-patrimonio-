@@ -4,13 +4,12 @@ import Patrimonio from "../Models/Patrimonio.js";
 
 // Definindo o schema do patrimônio
 const EmprestimoSchema = new mongoose.Schema({
-    id: { type: String, required: true },
-    unidade: { type: String, required: true },
-    professor: { type: Object, User, required: true },
-    aluno: { type: Object, User, required: true },
-    patrimonio: { type: Object, Patrimonio, required: true },
-    dataAquisicao: { type: Date, required: true },
-    dataRetorno: { type: Date, required: true },
+    id: { type: Number, required: true },
+    espacoUFSC: { type: Number, required: true },
+    matricula_professor: { type: Object, User, required: true },
+    matricula_aluno: { type: Object, User, required: true },
+    codigo_patrimonio: { type: Object, Patrimonio, required: true },
+    data_registro: { type: Date, required: true },
     descricao: { type: String, required: false }, //não obrigatório
 }, {
     timestamps: true // cria automaticamente campos "createdAt" e "updatedAt"
