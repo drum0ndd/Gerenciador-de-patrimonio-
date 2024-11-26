@@ -1,0 +1,43 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Documentação da API de gerenciamento de patrimônio da Universidade Federal de Santa Catarina",
+        "description": "Por meio dessa documentação, será possível visitar os endpoints da API e também testar as disponibilidades da rotas. OBS: Para isso é preciso estar autenticado.",
+        "contact": {
+            "email": "arthurprodrigues1@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3000",
+            "description": "Servidor Local"
+        }
+    ],
+    "paths": {
+        "/user/": {},
+        "/user/": {},
+        "/user/{id}": {},
+        "/user/{id}": {},
+        "/user/{id}": {},
+        "/auth/": {},
+        "/patrimonio/": {},
+        "/patrimonio/": {},
+        "/patrimonio/{id}": {},
+        "/patrimonio/{id}": {},
+        "/patrimonio/{id}": {},
+        "/espacoUFSC/": {},
+        "/espacoUFSC/": {},
+        "/espacoUFSC/{id}": {},
+        "/espacoUFSC/{id}": {},
+        "/espacoUFSC/{id}": {},
+        "/emprestimo/": {},
+        "/emprestimo/": {},
+        "/emprestimo/{id}": {},
+        "/emprestimo/{id}": {},
+        "/byuser/": {}
+    },
+    "components": {}
+
+
+}
