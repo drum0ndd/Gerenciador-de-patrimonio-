@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios'; // Note: You must run 'npm install axios' first
 import { AlertCircle, User, BookOpen, Lock, Mail } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -11,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 
 const Login = () => {
-  const [userType, setUserType] = useState(1); // Começa como aluno (1)
+  const [userType, setUserType] = useState(1); // Starts as student (1)
   const [matricula, setMatricula] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
@@ -19,13 +20,13 @@ const Login = () => {
   const [recuperacaoEnviada, setRecuperacaoEnviada] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Simulação do banco de dados
-  const mockDB = {
-    usuarios: [
-      { matricula: '12345678', senha: 'senha123', tipo_egresso: 1, email: 'aluno@escola.com' },
-      { matricula: '123456', senha: 'prof123', tipo_egresso: 2, email: 'professor@escola.com' }
-    ]
-  };
+  // Configuração base do Axios
+  const api = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,45 +34,44 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Validações básicas
+      // Basic validations
       if (!matricula || !senha) {
         throw new Error('Por favor, preencha todos os campos');
       }
 
-      // Simulação de chamada à API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Busca usuário no mock do banco
-      const usuario = mockDB.usuarios.find(u => u.matricula === matricula);
-
-      if (!usuario) {
-        throw new Error('Matrícula não encontrada');
-      }
-
-      if (usuario.senha !== senha) {
-        throw new Error('Senha incorreta');
-      }
-
-      // Verifica se o tipo de usuário corresponde
-      if (usuario.tipo_egresso !== userType) {
-        throw new Error(
-          userType === 1 
-            ? 'Esta matrícula pertence a um professor. Por favor, selecione o tipo correto de usuário.' 
-            : 'Esta matrícula pertence a um aluno. Por favor, selecione o tipo correto de usuário.'
-        );
-      }
-
-      // Login bem sucedido
-      console.log('Login realizado com sucesso:', {
+      // API call for login
+      const response = await api.post('/login', {
         matricula,
-        tipo_egresso: usuario.tipo_egresso
+        senha,
+        tipo_egresso: userType
       });
 
-      // Aqui você redirecionaria para a página apropriada
-      alert('Login realizado com sucesso!');
+      // Successful login
+      console.log('Login realizado com sucesso:', response.data);
+
+      // Store authentication token
+      localStorage.setItem('token', response.data.token);
+
+      // Redirect based on user type
+      if (userType === 1) {
+        window.location.href = '/aluno/dashboard';
+      } else {
+        window.location.href = '/professor/dashboard';
+      }
 
     } catch (error) {
-      setErro(error.message);
+      // Handle different types of errors
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setErro(error.response.data.message || 'Falha no login. Tente novamente.');
+      } else if (error.request) {
+        // The request was made but no response was received
+        setErro('Sem resposta do servidor. Verifique sua conexão com a internet.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setErro(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -87,15 +87,11 @@ const Login = () => {
         throw new Error('Por favor, insira seu email');
       }
 
-      // Simulação de chamada à API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Verifica se o email existe no mock do banco
-      const usuarioExiste = mockDB.usuarios.find(u => u.email === email);
-      
-      if (!usuarioExiste) {
-        throw new Error('Email não encontrado no sistema');
-      }
+      // API call for password recovery
+      await api.post('/recuperar-senha', {
+        email,
+        tipo_egresso: userType
+      });
 
       setRecuperacaoEnviada(true);
       setTimeout(() => {
@@ -104,7 +100,13 @@ const Login = () => {
       }, 3000);
 
     } catch (error) {
-      setErro(error.message);
+      if (error.response) {
+        setErro(error.response.data.message || 'Recuperação de senha falhou');
+      } else if (error.request) {
+        setErro('Sem resposta do servidor. Verifique sua conexão com a internet.');
+      } else {
+        setErro(error.message);
+      }
     } finally {
       setLoading(false);
     }
