@@ -4,8 +4,8 @@ import { validId, validUser } from '../middlewares/global.middlewares.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 const router = Router();
 
-
-router.post("/", UserController.create);
+//user routes
+router.post("/", UserController.create); //cria user: http://localhost:3000/user
 router.get("/", authMiddleware, UserController.findAll);
 router.get("/:id", authMiddleware, validId, validUser, UserController.findById);
 router.delete("/:id", authMiddleware, UserController.DeleteUserbyId);

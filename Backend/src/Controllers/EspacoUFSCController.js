@@ -84,6 +84,22 @@ const findById = async (req, res) => {
 
 };
 
+//fazer essa função
+const findbymatricula = async (req, res) => {
+    const id_espaco = await req.espacoUFSC;
+    if (!id_espaco) {
+        return res.status(404).send({ message: "preencha o id que desejas." });
+    }
+
+    const existingEspacoUFSC = await EspacoUFSCService.findByIdService(id_espaco);
+    if (!existingEspacoUFSC) {
+        return res.status(404).send({ message: "Espaco UFSC não encontrado no banco de dados." });
+    }
+
+    res.send(existingEspacoUFSC);
+
+};
+
 const DeleteEspacoUFSCbyId = async (req, res) => {
     const id_espaco = req.params.id;
     const EspacoUFSC = await EspacoUFSCService.findByIdService(id_espaco);
