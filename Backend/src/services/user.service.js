@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 const createService = (body) => User.create(body);
 
 const findAllService = (offset, limit) => User.find().sort({_id: -1}).skip(offset).limit(limit);
-//populate('User') caso queira retornar algum objeto dentro de alguma listagem
 
 const contauserService = () => User.countDocuments();
 

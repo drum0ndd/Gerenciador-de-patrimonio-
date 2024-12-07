@@ -4,7 +4,7 @@ import {isProfessor, validEspacoUFSC} from '../middlewares/global.middlewares.js
 
 const createEmprestimo = (body) => Emprestimo.create(body);
 
-const findAllByEspacoUFSCService = () => Emprestimo.find();
+const findAllService = () => Emprestimo.find();
 
 const findByIdService = (id) => Emprestimo.findById(id);
 
@@ -41,7 +41,7 @@ const EmprestimoByUserAlunoService = async (req, res) => {
 
 export default {
     createEmprestimo,
-    findAllByEspacoUFSCService,
+    findAllService,
     findByIdService,
     DeleteService,
     EmprestimoByUserAlunoService

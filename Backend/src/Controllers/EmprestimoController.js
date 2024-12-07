@@ -1,64 +1,68 @@
 import EmprestimoService from '../Services/Emprestimo.service.js';
 import userService from '../services/user.service.js';
-import all from '../middlewares/global.middlewares.js';
 
 const create = async (req, res) => {
-    try {const { 
-        espacoUFSC, 
-        matricula_professor, 
-        matricula_aluno, 
-        codigo_patrimonio, 
-        data_registro,  
-        descricao // não obrigatório
-    } = req.body;
-
-    if (
-        !espacoUFSC || 
-        !matricula_professor || 
-        !matricula_aluno || 
-        !codigo_patrimonio || 
-        !data_registro ||
-        !descricao)
-        {
-        return res.status(400).json({ message: "Com exceção de descrição, todos os outros campos são obrigatórios" });
-    }
-    
-
-    const existingEmprestimo = await EmprestimoService.findAllByEspacoUFSCService();
-    if (existingEmprestimo.some(emprestimo => emprestimo.patrimonio.id === patrimonio.id)) {
-        return res.status(400).json({ message: "O patrimonio informado já foi emprestado"});
-    }
-
-    //verifica se o professor é do tipo 2:
-
-    const validProfessor = await userService.findByIdService(matricula_professor);
-    if (!validProfessor) {
-        return res.status(404).send({ message: "Professor não encontrado no banco de dados" });
-    }
-
-
-    //criação do emprestimo
-    const emprestimo = await EmprestimoService.createEmprestimo(req.body); 
-
-    if (!emprestimo) {
-        return res.status(400).json({ message: "Falha ao criar emprestimo" });
-    }
-
-    res.status(201).send({
-        message: "Emprestimo criado",
-        emprestimo: { 
+    try {
+        const { 
             espacoUFSC, 
             matricula_professor, 
             matricula_aluno, 
             codigo_patrimonio, 
             data_registro,  
-            descricao
-        },
-    });
-        } catch (err) {
-            res.status(500).send({ message: err.message });
+            descricao // Não obrigatório
+        } = req.body;
+
+        if (!espacoUFSC || !matricula_professor || !matricula_aluno || !codigo_patrimonio || !data_registro) {
+            return res.status(400).json({ message: "Com exceção de descrição, todos os outros campos são obrigatórios." });
         }
-    };
+
+        const existingEmprestimo = await EmprestimoService.findAllService();
+        
+        if (existingEmprestimo.some(emprestimo => emprestimo.codigo_patrimonio === codigo_patrimonio)) {
+            return res.status(400).json({ message: "O patrimônio informado já foi emprestado." });
+        }
+
+        // Validação do professor
+        const validProfessor = await userService.findByIdService(matricula_professor);
+        if (!validProfessor) {
+            return res.status(404).send({ message: "Professor não encontrado no banco de dados." });
+        }
+        if (validProfessor.tipo !== 2) {
+            return res.status(400).send({ message: "O usuário informado não é um professor." });
+        }
+
+
+        // Validação do aluno
+        const validAluno = await userService.findByIdService(matricula_aluno);
+        if (!validAluno) {
+            return res.status(404).send({ message: "Aluno não encontrado no banco de dados." });
+        }
+        if (validAluno.tipo !== 1) { // Supondo que tipo 1 representa aluno
+            return res.status(400).send({ message: "O usuário informado não é um aluno." });
+        }
+
+        // Criação do empréstimo
+        const emprestimo = await EmprestimoService.createEmprestimo(req.body);
+
+
+        if (!emprestimo) {
+            return res.status(500).json({ message: "Falha ao criar empréstimo." });
+        }
+
+        // Resposta de sucesso
+        res.status(201).send({
+            message: "Empréstimo criado com sucesso!",
+            emprestimo,
+        });
+
+    } catch (err) {
+
+        console.error("Erro ao criar empréstimo:", err);
+        res.status(500).send({ message: "Erro interno no servidor. Tente novamente mais tarde." });
+
+    }
+};
+
     
     const findAllByEspacoUFSC = async (req, res) => {
         const emprestimos = await EmprestimoService.findAllByEspacoUFSCService();

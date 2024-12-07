@@ -4,10 +4,10 @@ import Patrimonio from "../Models/Patrimonio.js";
 
 // Definindo o schema do patrimônio
 const EmprestimoSchema = new mongoose.Schema({
-    espacoUFSC: { type: Number, required: true },
-    matricula_professor: { type: Object, User, required: true },
-    matricula_aluno: { type: Object, User, required: true },
-    codigo_patrimonio: { type: Object, Patrimonio, required: true },
+    espacoUFSC: { type: String , required: true },
+    matricula_professor: { type: Number , required: true },
+    matricula_aluno: { type: Number , required: true },
+    codigo_patrimonio: { type: Number , required: true },
     data_registro: { type: Date, required: true },
     descricao: { type: String, required: false }, //não obrigatório
 }, {
