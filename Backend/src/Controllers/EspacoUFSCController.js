@@ -1,62 +1,58 @@
 import EspacoUFSCService from "../services/espacoUFSC.service.js";
 import { isProfessor } from "../middlewares/global.middlewares.js";
 
-const Create = async (req, res) => {
 
-    try{ const {
-            id_espaco,
+const Create = async (req, res) => {
+    try {
+        const {
             nome,
             descricao,
             matricula_responsavel,
-            lista_patrimonio, // não é obrigatório
-            lista_participantes
+            lista_patrimonios = [], // Valores padrão
+            lista_participantes = [],
         } = req.body;
 
-        if (
-            !id_espaco|| 
-            !nome|| 
-            !descricao|| 
-            !matricula_responsavel)  {
-            return res.status(400).json({message: "Preencha todas as informações!"});
-        };
+        // Validação dos campos obrigatórios
+        if (!nome || !descricao || !matricula_responsavel) {
+            return res.status(400).json({ message: "Preencha todas as informações obrigatórias!" });
+        }
 
-        // Valida o professor
+        // Valida se a matrícula é de um professor
         try {
             await isProfessor(matricula_responsavel);
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
 
+        // Verifica duplicidade do nome no banco
         const existingEspacoUFSC = await EspacoUFSCService.findAllService();
-        if (existingEspacoUFSC.some(EspacoUFSC => EspacoUFSC.id_espaco === id_espaco)) {
-            return res.status(400).json({ message: "Espaço UFSC já cadastrado" });
-        };
+        if (existingEspacoUFSC.some(EspacoUFSC => EspacoUFSC.nome === nome
+            && EspacoUFSC.matricula_responsavel === matricula_responsavel
+        )) {
+            return res.status(400).json({ message: "Espaco UFSC já cadastrado"});
+            }
 
-        const EspacoUFSC = await EspacoUFSCService.CreateService(req.body);
-
-        console.log(EspacoUFSC);
+        // Cria o novo espaço
+        const EspacoUFSC = await EspacoUFSCService.CreateService({
+            nome,
+            descricao,
+            matricula_responsavel,
+            lista_patrimonios,
+            lista_participantes,
+        });
 
         if (!EspacoUFSC) {
-            return res.status(400).json({ message: "Falha ao criar novo espaço UFSC" });
+            return res.status(400).json({ message: "Falha ao criar novo espaço UFSC." });
         }
 
+        // Retorna o sucesso
         res.status(201).send({
-            message: "Novo espaco UFSC foi criado!",
-            EspacoUFSC: {
-                id_espaco: EspacoUFSC._id,
-                nome, 
-                descricao,
-                matricula_responsavel,
-                lista_patrimonio,
-            },
-
-                EspacoUFSC,
-                lista_participantes: [...lista_participantes, matricula_responsavel]
-            });
-
-        
-        } catch (err) {;
-        res.status(500).send({ message: err.message });
+            message: "Novo espaço UFSC foi criado!",
+            espacoUFSC: EspacoUFSC, // Retorna o documento criado
+        });
+    } catch (err) {
+        console.error("Erro ao criar Espaço UFSC:", err); // Log para debug
+        res.status(500).send({ message: "Erro interno no servidor. Tente novamente mais tarde.", error: err.message });
     }
 };
 
@@ -85,7 +81,7 @@ const findById = async (req, res) => {
 };
 
 //fazer essa função
-const findbymatricula = async (req, res) => {
+const findEspacobyMatricula = async (req, res) => {
     const id_espaco = await req.espacoUFSC;
     if (!id_espaco) {
         return res.status(404).send({ message: "preencha o id que desejas." });

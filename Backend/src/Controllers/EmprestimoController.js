@@ -4,7 +4,6 @@ import all from '../middlewares/global.middlewares.js';
 
 const create = async (req, res) => {
     try {const { 
-        id,
         espacoUFSC, 
         matricula_professor, 
         matricula_aluno, 
@@ -14,7 +13,6 @@ const create = async (req, res) => {
     } = req.body;
 
     if (
-        !id || 
         !espacoUFSC || 
         !matricula_professor || 
         !matricula_aluno || 
@@ -31,6 +29,13 @@ const create = async (req, res) => {
         return res.status(400).json({ message: "O patrimonio informado já foi emprestado"});
     }
 
+    //verifica se o professor é do tipo 2:
+
+    const validProfessor = await userService.findByIdService(matricula_professor);
+    if (!validProfessor) {
+        return res.status(404).send({ message: "Professor não encontrado no banco de dados" });
+    }
+
 
     //criação do emprestimo
     const emprestimo = await EmprestimoService.createEmprestimo(req.body); 
@@ -42,7 +47,6 @@ const create = async (req, res) => {
     res.status(201).send({
         message: "Emprestimo criado",
         emprestimo: { 
-            id: emprestimo._id,
             espacoUFSC, 
             matricula_professor, 
             matricula_aluno, 
@@ -110,7 +114,6 @@ const create = async (req, res) => {
 
         res.send({
             results: emprestimo.map(emprestimoItem => ({
-            id: emprestimoItem._id,
             espacoUFSC: emprestimoItem.espacoUFSC,
             matricula_professor: emprestimoItem.professor,
             matricula_aluno: emprestimoItem.aluno,

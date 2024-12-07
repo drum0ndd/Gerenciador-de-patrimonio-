@@ -4,7 +4,6 @@ import Patrimonio from "../Models/Patrimonio.js";
 
 // Definindo o schema do patrimônio
 const EmprestimoSchema = new mongoose.Schema({
-    id: { type: Number, required: true },
     espacoUFSC: { type: Number, required: true },
     matricula_professor: { type: Object, User, required: true },
     matricula_aluno: { type: Object, User, required: true },

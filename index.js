@@ -22,8 +22,8 @@ connectDatabase();
 app.use(express.json());
 app.use("/user", userRoute);
 app.use("/auth", authRoute);
-app.use("/espacosUFSC", espacoUFSCRoute);
 app.use("/emprestimo", emprestimoRoute);
+app.use("/espacoufsc", espacoUFSCRoute);
 app.use("/doc", swaggerRoute);
 
 app.listen(port, () => {
