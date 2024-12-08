@@ -3,5 +3,4 @@ O projeto de Gerenciamento de Patrimônio Universitário é uma solução para a
 
 ## Integrantes
 - Arthur Paulo Rodrigues (23100747)
-- Lucas Marcelo Chitolina (23100767)
 - Guilherme Drumond da Silva (23200513)
