@@ -1,5 +1,8 @@
 import EspacoUFSCService from "../services/espacoUFSC.service.js";
 import { isProfessor } from "../middlewares/global.middlewares.js";
+import espacoUFSCService from "../services/espacoUFSC.service.js";
+import userService from "../services/user.service.js";
+
 
 
 const Create = async (req, res) => {
@@ -45,11 +48,18 @@ const Create = async (req, res) => {
             return res.status(400).json({ message: "Falha ao criar novo espaço UFSC." });
         }
 
+        const existingProfessor = await userService.findAllService();
+        if (existingProfessor.some(user => user.matricula === matricula_responsavel)) {
+            EspacoUFSC.lista_participantes.push(professor._id);
+        }
+
         // Retorna o sucesso
         res.status(201).send({
-            message: "Novo espaço UFSC foi criado!",
+            message: "Novo espaço UFSC foi criado! Professor adicionado como participante.",
             espacoUFSC: EspacoUFSC, // Retorna o documento criado
         });
+
+
     } catch (err) {
         console.error("Erro ao criar Espaço UFSC:", err); // Log para debug
         res.status(500).send({ message: "Erro interno no servidor. Tente novamente mais tarde.", error: err.message });
@@ -144,10 +154,64 @@ const UpdateEspacoUFSCById = async (req, res) => {
     res.send({ message: "Espaço UFSC atualizado com sucesso" });
 };
 
+const addEmprestimo = async (espacoUFSC, emprestimoId) => {
+    const valid_espacoUFSC = await espacoUFSCService.findAllService();
+    if (!valid_espacoUFSC.some(espacoUFSC => espacoUFSC.espacoUFSC !== espacoUFSC)) {
+        return res.status(404).send({ message: "Espaço UFSC não encontrado no banco de dados" });
+    }
+    if (!Array.isArray(espacoUFSC.emprestimos)) {
+        espacoUFSC.emprestimos = [];
+    }
+    espacoUFSC.emprestimos.push(emprestimoId);
+    await espacoUFSC.save();
+};
+
+
+const addAluno = async (espacoUFSC, matricula, res) => {
+    try {
+        if (!res || typeof res.status !== 'function') {
+            throw new Error('Objeto res não foi passado corretamente');
+        }
+
+        const valid_espacoUFSC = await espacoUFSCService.findAllService();
+        const espaco = valid_espacoUFSC.find(item => item.espacoUFSC === espacoUFSC);
+
+        if (!espaco) {
+            return res.status(404).send({ message: "Espaço UFSC não encontrado no banco de dados" });
+        }
+
+        const valid_aluno = await userService.findAllService();
+        const aluno = valid_aluno.find(aluno => aluno.matricula === matricula && aluno.tipo !== "2");
+
+        if (!aluno) {
+            return res.status(404).send({ message: "Aluno não encontrado ou não autorizado" });
+        }
+
+        if (espaco.lista_participantes.includes(aluno._id)) {
+            return res.status(400).send({ message: "Aluno já está adicionado ao espaço" });
+        }
+
+        espaco.lista_participantes.push(aluno._id);
+        await espaco.save();
+
+        return res.send({ message: "Aluno adicionado com sucesso" });
+
+
+    } catch (error) {
+        console.error("Erro ao adicionar aluno:", error);
+        return res.status(500).send({ message: "Erro interno no servidor", error: error.message });
+    }
+};
+
+
+
+
 export default {
     Create,
     findAll,
     findById,
     DeleteEspacoUFSCbyId,
-    UpdateEspacoUFSCById
+    UpdateEspacoUFSCById,
+    addEmprestimo,
+    addAluno,  
 };

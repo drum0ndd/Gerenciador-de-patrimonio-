@@ -1,41 +1,41 @@
 import PatrimonioService from '../services/Patrimonio.Service.js';
+import EspacoUFSCService from '../services/espacoUFSC.service.js';
 
 const create = async (req, res) => {
-    try { const{ nome, id, espacoUFSC, estado, dataRegistro, descricao } = req.body;
+    try { const{ codigo_patrimonio, nome, id_espacoUFSC, responsavel_espacoUFSC, estado, dataRegistro, descricao } = req.body;
 
 
-    if (!nome || !espacoUFSC || !estado || !dataRegistro) {
+    if (!codigo_patrimonio && !nome && !id_espacoUFSC && !responsavel_espacoUFSC && !estado && !dataRegistro && !descricao) {
         return res.status(400).json({message: "Todos os campos são obrigatórios"});
     }
 
     const existingPatrimonio = await PatrimonioService.findAllService();
 
-    if (existingPatrimonio.some(patrimonio => patrimonio.id === id)) {
+    const espacoUFSC = await EspacoUFSCService.findByIdService(id_espacoUFSC);
+
+    if (!espacoUFSC) {
+        return res.status(404).send({message: "Espaço UFSC não encontrado no banco de dados"});
+    }
+
+    if (existingPatrimonio.some(
+        patrimonio => patrimonio.nome === nome 
+        && patrimonio.id_espacoUFSC === id_espacoUFSC 
+        && patrimonio.descricao === descricao)) {
         return res.status(400).json({message: "Patrimônio já cadastrado"});
     }
 
     const patrimonio = await PatrimonioService.createPatrimonio(req.body);
 
-    if (!patrimonio) {
-        return res.status(400).json({message: "Falha ao criar patrimônio"});
-    }
+    EspacoUFSCService.addPatrimonio(id_espacoUFSC, patrimonio);
 
-    res.status(201).send({
-        message: "Patrimônio criado",
-        patrimonio: {
-            id: patrimonio._id,
-            nome,
-            unidade,
-            estado,
-            dataRegistro,
-            descricao,
-        },
-    });
-} catch (err) {
-    res.status(500).send({message: err.message});
+    res.status(201).send(patrimonio);
+
+
+} catch (error) {
+    res.status(500).json({ message: 'Erro ao criar patrimônio', error: error.message });
 }
-}
-;
+};
+
 
 const findAll = async (req, res) => {
     const patrimonio = await PatrimonioService.findAllService();
@@ -46,12 +46,12 @@ const findAll = async (req, res) => {
     res.send(patrimonio);
 };
 
-const DeletePatrimoniobyId = async (req, res) => {
+const DeletePatrimonio = async (req, res) => {
     const id = req.params.id;
     const patrimonio = await PatrimonioService.findByIdService(id);
 
     if (!patrimonio) {
-        return send.status(404).send({message: "Patrimônio não encontrado no banco de dados"});
+        return res.status(400).json({message: "Falha ao criar patrimônio"});
     }
 
     await PatrimonioService.DeleteService(id);
@@ -72,9 +72,21 @@ const UpdatePatrimoniobyId = async (req, res) => {
     res.send({message: "Patrimônio atualizado com sucesso"});
 };
 
+const FindById = async (req, res) => {
+    const id = req.params.id;
+    const patrimonio = await PatrimonioService.findByIdService(id);
+
+    if (!patrimonio) {
+        return res.status(404).send({message: "Patrimônio não encontrado no banco de dados"});
+    }
+
+    res.send(patrimonio);
+};
+
 export default {
     create,
     findAll,
-    DeletePatrimoniobyId,
+    DeletePatrimonio,
     UpdatePatrimoniobyId,
+    FindById,
 };

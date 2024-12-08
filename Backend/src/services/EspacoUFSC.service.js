@@ -15,6 +15,21 @@ const findByIdService = (id) => EspacoUFSC.findById(id);
 
 const DeleteEspacoUFSCbyId = (id) => EspacoUFSC.findByIdAndDelete(id);
 
+const addEmprestimo = async (id, emprestimo) => {
+    const espaco = await EspacoUFSC.findById(id);
+    if (!espaco) {
+        throw new Error("Espaço UFSC não encontrado no banco de dados.");
+    }    
+};   
+
+const addPatrimonio = async (id, patrimonio) => {
+    const espaco = await EspacoUFSC.findById(id);
+    if (!espaco) {
+        throw new Error("Espaço UFSC não encontrado no banco de dados.");
+    }
+    espaco.lista_patrimonios.push(patrimonio);
+    await espaco.save();
+};
 
 
 export default {
@@ -22,4 +37,6 @@ export default {
     findAllService,
     findByIdService,
     DeleteEspacoUFSCbyId,
+    addEmprestimo,
+    addPatrimonio,
 };

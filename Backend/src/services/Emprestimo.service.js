@@ -37,6 +37,9 @@ const EmprestimoByUserAlunoService = async (req, res) => {
         return res.send(emprestimosPorMAtriculaAluno);
     }
 };
+const findAllByEspacoUFSCService = async (espacoUFSC) => {
+    return await EmprestimoModel.find({ espacoUFSC }); // Considerando Mongoose
+};
 
 
 export default {
@@ -44,5 +47,6 @@ export default {
     findAllService,
     findByIdService,
     DeleteService,
-    EmprestimoByUserAlunoService
+    EmprestimoByUserAlunoService,
+    findAllByEspacoUFSCService
 };

@@ -8,6 +8,7 @@ const findAllService = (offset, limit) => User.find().sort({_id: -1}).skip(offse
 const contauserService = () => User.countDocuments();
 
 async function findByIdService(id) {
+  console.log(id);
   if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new Error("ID inválido");
   }
@@ -27,6 +28,7 @@ async function isUserProfessorByMatricula(matricula) {
   const user = await User.findOne({ matricula, tipo_egresso: 2 });
   return !!user; // Retorna true se o usuário existe, caso contrário false
 }
+
 
 export default {
   createService,
