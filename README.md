@@ -13,9 +13,9 @@ A aplicação foi densevolvida para registrar todos os pertences que são empres
 
 ## Como acessar a aplicação
 
-A aplicação está hospedada no servidor da UFSC e pode ser acessada pelo link abaixo:
+A aplicação está hospedada no servidor RENDER e pode ser acessada pelo link abaixo:
 
-Link: 
+Link: https://gerenciador-de-patrimonio-ufsc.onrender.com/
 
 ## Integrantes
 - Arthur Paulo Rodrigues (23100747)
