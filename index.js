@@ -9,7 +9,6 @@ import userRoute from './Backend/src/routes/user.route.js';
 import authRoute from './Backend/src/routes/auth.route.js';
 import espacoUFSCRoute from './Backend/src/routes/espacoUFSC.route.js';
 import emprestimoRoute from './Backend/src/routes/Emprestimo.route.js';
-import swaggerRoute from './Backend/src/routes/swagger.route.js';
 import patrimonioRoute from './Backend/src/routes/Patrimonio.route.js';
 
 
@@ -26,7 +25,6 @@ app.use("/auth", authRoute);
 app.use("/emprestimo", emprestimoRoute);
 app.use("/espacoufsc", espacoUFSCRoute);
 app.use("/patrimonio", patrimonioRoute);
-app.use("/doc", swaggerRoute);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

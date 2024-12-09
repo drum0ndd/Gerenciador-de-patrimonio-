@@ -20,6 +20,8 @@ import PatrimonioService from '../services/Patrimonio.Service.js';
                 return res.status(400).json({ message: "Com exceção de descrição, todos os outros campos são obrigatórios." });
             }
 
+            //Valida se existe um emprestimo já cadastrado
+
             const existingEmprestimo = await EmprestimoService.findAllService();
             
             if (existingEmprestimo.some(emprestimo => emprestimo.codigo_patrimonio === codigo_patrimonio)) {
@@ -30,8 +32,9 @@ import PatrimonioService from '../services/Patrimonio.Service.js';
             const validProfessor = await userService.isUserProfessorByMatricula(matricula_professor);
 
             if (!validProfessor) { //tipo 2 representa professor
-                return res.status(400).send({ message: "O usuário informado não é um professor." });
+                return res.status(400).send({ message: "O usuário informado não é um professor. É necessário ser um professor responsável pela unidade para cadastrar um empréstimo." });
             }
+
 
             // Validação do aluno
             const validAluno = await userService.isUserProfessorByMatricula(matricula_aluno);
@@ -48,11 +51,19 @@ import PatrimonioService from '../services/Patrimonio.Service.js';
                 return res.status(400).send({ message: "O espaço UFSC informado não existe." });
             }
 
+            const id_espaco = validEspacoUFSC.find(espaco => espaco.nome === espacoUFSC)._id;
+
             // Validação do patrimônio
             const validPatrimonio = await PatrimonioService.findAllService();
 
             if (validPatrimonio.some(patrimonio => patrimonio.codigo_patrimonio !== codigo_patrimonio)) {
                 return res.status(400).send({ message: "O patrimônio informado não existe." });
+            }
+
+            const validResponsavel = await EspacoUFSCService.findByIdService(id_espaco);
+
+            if (validResponsavel.matricula_responsavel !== matricula_professor) {
+                return res.status(400).send({ message: "O professor informado não é o responsável pelo espaço UFSC." });
             }
 
             // Criação do empréstimo
