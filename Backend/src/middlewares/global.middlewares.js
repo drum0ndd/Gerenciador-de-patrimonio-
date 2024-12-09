@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import userService from "../services/User.service.js";
+import userService from "../services/user.service.js";
 import PatrimonioService from "../services/Patrimonio.Service.js";
 import EmprestimoService from "../services/Emprestimo.service.js";
 import EspacoUFSC from "../services/EspacoUFSC.service.js";
