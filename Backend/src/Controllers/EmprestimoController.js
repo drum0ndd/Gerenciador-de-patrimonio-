@@ -1,6 +1,6 @@
-import EmprestimoService from '../Services/Emprestimo.service.js';
+import EmprestimoService from '../services/Emprestimo.service.js';
 import userService from '../services/user.service.js';
-import EspacoUFSCService from '../services/espacoUFSC.service.js';
+import EspacoUFSCService from "../services/EspacoUFSC.service.js";
 import PatrimonioService from '../services/Patrimonio.Service.js';
 
     const create = async (req, res) => {
