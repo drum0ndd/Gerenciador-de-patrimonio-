@@ -1,6 +1,5 @@
-import EspacoUFSCService from "../services/espacoUFSC.service.js";
 import { isProfessor } from "../middlewares/global.middlewares.js";
-import espacoUFSCService from "../services/espacoUFSC.service.js";
+import EspacoUFSCService from "../services/EspacoUFSC.service.js";
 import userService from "../services/user.service.js";
 
 

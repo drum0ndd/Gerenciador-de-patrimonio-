@@ -26,9 +26,8 @@ const UpdateService = async (id, updateData) => {
 async function isUserProfessorByMatricula(matricula) {
   // Verifica se existe um usuário com a matrícula e tipo_egresso igual a 2
   const user = await User.findOne({ matricula, tipo_egresso: 2 });
-  return !!user; // Retorna true se o usuário existe, caso contrário false
+  return !!user; // Retorna true se o usuário existe (é professor), caso contrário false
 }
-
 
 export default {
   createService,

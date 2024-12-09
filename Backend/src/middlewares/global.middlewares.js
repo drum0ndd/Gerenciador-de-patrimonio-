@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 import userService from "../services/user.service.js";
 import PatrimonioService from "../services/Patrimonio.Service.js";
-import EmprestimoService from "../Services/Emprestimo.service.js";
-import EspacoUFSC from "../services/espacoUFSC.service.js";
+import EmprestimoService from "../services/Emprestimo.service.js";
+import EspacoUFSC from "../services/EspacoUFSC.service.js";
 
 export const validId = (req, res, next) => {
     const id = req.params.id;

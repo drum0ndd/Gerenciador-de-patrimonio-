@@ -11,7 +11,6 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.0",
     "react-router-dom": "^6.27.0",
-    "swagger-ui-express": "^5.0.1",
     "vite": "^6.0.1"
   },
   "name": "gerenciador-de-patrimonio-",
