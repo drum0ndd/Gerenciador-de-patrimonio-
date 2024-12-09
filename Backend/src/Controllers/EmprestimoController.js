@@ -41,8 +41,6 @@ import PatrimonioService from '../services/Patrimonio.Service.js';
                 return res.status(400).send({ message: "O usuário informado não é um aluno." });
             }
 
-            console.log(validAluno);
-
             // Validação do espaço UFSC
             const validEspacoUFSC = await EspacoUFSCService.findAllService();
 
