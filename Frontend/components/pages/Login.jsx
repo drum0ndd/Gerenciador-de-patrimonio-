@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { AlertCircle, User, BookOpen, Lock, Mail } from 'lucide-react';
-import { Alert, AlertDescription } from '../ui/alert';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Alert, AlertDescription } from '../ui/alert.jsx';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card.jsx';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "../ui/dialog.jsx";
+import EspacoUFSC from '../../../Backend/src/Models/EspacoUFSC.js';
 
 const LoginPage = () => {
   const [loginType, setLoginType] = useState('professor'); // 'professor' or 'student'
@@ -56,60 +57,115 @@ const LoginPage = () => {
     }
   };
 
-  // Forgot password handler
+
+ const validaLoginSala = async (req, res, next) => {
+    try {
+        const { email, senha, salaId } = req.body;
+
+        // Busca o usuário pelo email
+        const updateUser = async (userId, userData) => {
+          try {
+            // Obtém o token de autenticação do localStorage
+            const token = localStorage.getItem('token');
+        
+            // Chamada PATCH para atualizar usuário
+            const response = await fetch(`/users:id`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(userData)
+            });
+        
+            // Verifica se a resposta foi bem-sucedida
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Erro ao atualizar usuário');
+            }
+        
+            // Retorna os dados do usuário atualizado
+            const result = await response.json();
+            return result.user;
+        
+          } catch (error) {
+            // Tratamento de erro
+            console.error('Erro na atualização:', error);
+            throw error;
+          }
+        };
+        
+
+        if (!usuario) {
+            return res.status(404).send({ message: "Usuário não encontrado!" });
+        }
+
+
+        const getEspacoUFSCById = async (id) => {
+          try {
+            const token = localStorage.getItem('token');
+        
+            const response = await fetch('/:id' , {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+        
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Erro ao buscar Espaço UFSC');
+            }
+        
+            const data = await response.json();
+            return data;
+        
+          } catch (error) {
+            console.error('Erro na busca de Espaço UFSC:', error);
+            throw error;
+          }
+        };
+
+        // Validação para professor
+        if (usuario.tipo.nome === 'professor') {
+            // Verifica se o professor pertence à sala
+            if (!sala.professores.includes(User._id)) {
+                return res.status(403).send({ 
+                    message: "Você não tem permissão para acessar esta sala!" 
+                });
+            }
+        } 
+        // Validação para aluno
+        else if (usuario.tipo.nome === 'aluno') {
+            // Verifica se o aluno está matriculado na sala
+            if (!EspacoUFSC.participantes.includes(User.id)) {
+                return res.status(403).send({ 
+                    message: "Você não está matriculado nesta sala!" 
+                });
+            }
+        }
+
+    
+        req.usuario = usuario;
+        req.sala = sala;
+
+        next();
+    } catch (err) {
+        console.error('Erro na validação de login:', err);
+        res.status(500).send({ 
+            message: "Erro interno do servidor", 
+            error: err.message 
+        });
+    }
+};
+
   const handleForgotPassword = async (e) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
     
-    // Função para atualizar usuário
-  const updateUser = async (userId, userData) => {
-  try {
-    // Obtém o token de autenticação do localStorage
-    const token = localStorage.getItem('token');
-
-    // Chamada PATCH para atualizar usuário
-    const response = await fetch(`/users/:id`, {
-      method: 'PATCH',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
-    });
-
-    // Verifica se a resposta foi bem-sucedida
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Erro ao atualizar usuário');
-    }
-
-    // Retorna os dados do usuário atualizado
-    const result = await response.json();
-    return result.user;
-
-  } catch (error) {
-    // Tratamento de erro
-    console.error('Erro na atualização:', error);
-    throw error;
-  }
-};
-
-// Exemplo de uso no componente
-  const handleUpdateProfile = async () => {
-    try {
-      const updatedUser = await updateUser(userId, {
-        name: 'Novo Nome',
-        email: 'novoemail@exemplo.com'
-      });
-      
-      // Atualiza estado ou faz algo com o usuário atualizado
-      console.log('Usuário atualizado:', updatedUser);
-    } catch (error) {
-      // Trata erro de atualização
-      alert(error.message);
-    }
-  };
+   
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">

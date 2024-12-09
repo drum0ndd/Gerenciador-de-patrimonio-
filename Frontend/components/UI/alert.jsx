@@ -23,4 +23,4 @@ const Alert = ({ message, type = 'info' }) => {
   )
 }
 
-export default Alert
+export default Alert;
