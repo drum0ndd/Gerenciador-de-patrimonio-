@@ -22,51 +22,48 @@ import {
 } from "../ui/dialog";
 
 const InstitutionRooms = () => {
-  const [rooms, setRooms] = useState([
-    {
-      id: 1,
-      name: 'Laboratório de Computação 01',
-      building: 'Centro de Ciências Tecnológicas',
-      capacity: 30,
-      type: 'Laboratório',
-      available: true,
-      schedule: [
-        { day: 'Segunda', periods: ['08:00-10:00', '14:00-16:00'] },
-        { day: 'Quarta', periods: ['10:00-12:00', '16:00-18:00'] }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Sala de Reuniões A',
-      building: 'Prédio Administrativo',
-      capacity: 15,
-      type: 'Sala de Reuniões',
-      available: false,
-      schedule: [
-        { day: 'Terça', periods: ['09:00-11:00'] },
-        { day: 'Quinta', periods: ['14:00-16:00'] }
-      ]
-    },
-    {
-      id: 3,
-      name: 'Auditório Central',
-      building: 'Centro de Convenções',
-      capacity: 200,
-      type: 'Auditório',
-      available: true,
-      schedule: [
-        { day: 'Segunda', periods: ['19:00-22:00'] },
-        { day: 'Sexta', periods: ['10:00-12:00'] }
-      ]
-    }
-  ]);
-
+  const [rooms, setRooms] = useState([]);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null); 
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetch('/salas', { 
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erro ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        setRooms(data); 
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false); 
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   const handleRoomDetails = (room) => {
     setSelectedRoom(room);
   };
 
+  if (isLoading) {
+    return <p>Carregando salas...</p>;
+  }
+
+  if (error) {
+    return <p>Erro ao carregar salas: {error}</p>;
+  }
   return (
     <div className="min-h-screen bg-gray-100">
       <header className="bg-blue-700 text-white p-4 shadow-md">

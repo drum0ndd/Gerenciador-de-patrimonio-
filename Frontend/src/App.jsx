@@ -9,7 +9,6 @@ function App() {
     function App() {
       return (
         <div>
-          <h1>Minha App</h1>
           <Login />
         </div>
       )

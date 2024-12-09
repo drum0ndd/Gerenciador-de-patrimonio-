@@ -8,10 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from "../ui/";
 
 const LoginPage = () => {
-  // State management
   const [loginType, setLoginType] = useState('professor'); // 'professor' or 'student'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,16 +18,14 @@ const LoginPage = () => {
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Login handler
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
     try {
-      // Simulated fetch call - replace with actual endpoint
-      const response = await fetch('/api/login', {
-        method: 'POST',
+      const response = await fetch('/users', {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -44,11 +41,8 @@ const LoginPage = () => {
       if (!response.ok) {
         throw new Error(data.message || 'Erro de login');
       }
-
-      // Handle successful login
       localStorage.setItem('token', data.token);
       
-      // Redirect based on user type
       if (loginType === 'professor') {
         window.location.href = '/professor/dashboard';
       } else {
@@ -68,30 +62,52 @@ const LoginPage = () => {
     setError(null);
     setIsLoading(true);
     
+    // Função para atualizar usuário
+  const updateUser = async (userId, userData) => {
+  try {
+    // Obtém o token de autenticação do localStorage
+    const token = localStorage.getItem('token');
+
+    // Chamada PATCH para atualizar usuário
+    const response = await fetch(`/users/:id`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    });
+
+    // Verifica se a resposta foi bem-sucedida
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Erro ao atualizar usuário');
+    }
+
+    // Retorna os dados do usuário atualizado
+    const result = await response.json();
+    return result.user;
+
+  } catch (error) {
+    // Tratamento de erro
+    console.error('Erro na atualização:', error);
+    throw error;
+  }
+};
+
+// Exemplo de uso no componente
+  const handleUpdateProfile = async () => {
     try {
-      // Simulated fetch call - replace with actual endpoint
-      const response = await fetch('/api/forgot-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: forgotPasswordEmail
-        })
+      const updatedUser = await updateUser(userId, {
+        name: 'Novo Nome',
+        email: 'novoemail@exemplo.com'
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Erro ao redefinir senha');
-      }
-
-      alert('Um e-mail de redefinição de senha foi enviado.');
-      setForgotPasswordEmail('');
-    } catch (err) {
-      setError(err.message || 'Erro ao redefinir senha.');
-    } finally {
-      setIsLoading(false);
+      
+      // Atualiza estado ou faz algo com o usuário atualizado
+      console.log('Usuário atualizado:', updatedUser);
+    } catch (error) {
+      // Trata erro de atualização
+      alert(error.message);
     }
   };
 
@@ -204,6 +220,6 @@ const LoginPage = () => {
       </Card>
     </div>
   );
-};
+}};
 
 export default LoginPage;
