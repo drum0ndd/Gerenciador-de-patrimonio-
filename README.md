@@ -25,7 +25,7 @@ Logo após, rodar:
 
 "NPM run dev" ou "NPM start" 
 
-Para iniciar o backend na pasta principal do projeto: "Gerenciado-de-patrimonio-"
+Para iniciar o backend na pasta principal do projeto: "Gerenciador-de-patrimonio-"
 
 ## Integrantes
 - Arthur Paulo Rodrigues (23100747)
