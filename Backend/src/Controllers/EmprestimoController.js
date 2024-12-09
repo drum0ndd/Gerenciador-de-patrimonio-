@@ -3,92 +3,67 @@ import userService from '../services/user.service.js';
 import EspacoUFSCService from "../services/EspacoUFSC.service.js";
 import PatrimonioService from '../services/Patrimonio.Service.js';
 
-    const create = async (req, res) => {
-        try {
-            const { 
-                espacoUFSC, 
-                matricula_professor, 
-                matricula_aluno, 
-                codigo_patrimonio, 
-                data_registro,  
-                descricao // Não obrigatório
-            } = req.body;
+const create = async (req, res) => {
+    try {
 
-            // Verificando se os dados do empréstimo foram informados corretamente
+        console.log(req.body);
 
-            if (!espacoUFSC || !matricula_professor || !matricula_aluno || !codigo_patrimonio || !data_registro) {
-                return res.status(400).json({ message: "Com exceção de descrição, todos os outros campos são obrigatórios." });
-            }
+        const { 
+            espacoUFSC, 
+            matricula_professor, 
+            matricula_aluno, 
+            codigo_patrimonio, 
+            data_registro,  
+            descricao 
+        } = req.body;
 
-            //Valida se existe um emprestimo já cadastrado
-
-            const existingEmprestimo = await EmprestimoService.findAllService();
-            
-            if (existingEmprestimo.some(emprestimo => emprestimo.codigo_patrimonio === codigo_patrimonio)) {
-                return res.status(400).json({ message: "O patrimônio informado já foi emprestado." });
-            }
-
-            // Validação do professor
-            const validProfessor = await userService.isUserProfessorByMatricula(matricula_professor);
-
-            if (!validProfessor) { //tipo 2 representa professor
-                return res.status(400).send({ message: "O usuário informado não é um professor. É necessário ser um professor responsável pela unidade para cadastrar um empréstimo." });
-            }
-
-
-            // Validação do aluno
-            const validAluno = await userService.isUserProfessorByMatricula(matricula_aluno);
-
-
-            if (validAluno) { //tipo 1 representa aluno    
-                return res.status(400).send({ message: "O usuário informado não é um aluno." });
-            }
-
-            // Validação do espaço UFSC
-            const validEspacoUFSC = await EspacoUFSCService.findAllService();
-
-            if (validEspacoUFSC.some(espaco => espaco.nome !== espacoUFSC)) {
-                return res.status(400).send({ message: "O espaço UFSC informado não existe." });
-            }
-
-            const id_espaco = validEspacoUFSC.find(espaco => espaco.nome === espacoUFSC)._id;
-
-            // Validação do patrimônio
-            const validPatrimonio = await PatrimonioService.findAllService();
-
-            if (validPatrimonio.some(patrimonio => patrimonio.codigo_patrimonio !== codigo_patrimonio)) {
-                return res.status(400).send({ message: "O patrimônio informado não existe." });
-            }
-
-            const validResponsavel = await EspacoUFSCService.findByIdService(id_espaco);
-
-            if (validResponsavel.matricula_responsavel !== matricula_professor) {
-                return res.status(400).send({ message: "O professor informado não é o responsável pelo espaço UFSC." });
-            }
-
-            // Criação do empréstimo
-            const emprestimo = await EmprestimoService.createEmprestimo(req.body);
-
-
-            if (!emprestimo) {
-                return res.status(500).json({ message: "Falha ao criar empréstimo." });
-            }
-
-            //inclui no espaço
-            await EspacoUFSCService.addEmprestimo(espacoUFSC, emprestimo._id);
-            // Resposta de sucesso
-            res.status(201).send({
-                message: "Empréstimo adicionado com sucesso!",
-                emprestimo,
-            });
-
-        } catch (err) {
-
-            console.error("Erro ao criar empréstimo:", err);
-            res.status(500).send({ message: "Erro interno no servidor. Tente novamente mais tarde." });
-
+        if (!espacoUFSC || !matricula_professor || !matricula_aluno || !codigo_patrimonio || !data_registro) {
+            return res.status(400).json({ message: "Com exceção de descrição, todos os outros campos são obrigatórios." });
         }
-    };
+
+        const existingEmprestimo = await EmprestimoService.findByIdService(codigo_patrimonio);
+        if (existingEmprestimo) {
+            return res.status(400).json({ message: "Emprestimo já cadastrado." });
+        }
+
+
+        const validProfessor = await userService.isUserProfessorByMatricula(matricula_professor);
+        if (!validProfessor) {
+            return res.status(400).send({ message: "O usuário informado não é um professor. É necessário ser um professor responsável pela unidade para cadastrar um empréstimo." });
+        }
+
+        const validAluno = await userService.isUserProfessorByMatricula(matricula_aluno);
+        if (validAluno) {
+            return res.status(400).send({ message: "O usuário informado não é um aluno." });
+        }
+
+
+        const validEspacoUFSC = await EspacoUFSCService.findByIdService(espacoUFSC);
+        if (!validEspacoUFSC) {
+            return res.status(404).send({ message: "Espaço UFSC não encontrado no banco de dados." });
+        }
+
+        const validPatrimonio = await PatrimonioService.findByIdService(codigo_patrimonio);
+        if (!validPatrimonio) {
+            return res.status(404).send({ message: "Patrimônio não encontrado no banco de dados." });
+        }
+
+    
+        const emprestimo = await EmprestimoService.createEmprestimo(req.body);
+
+        if (!emprestimo) {
+            return res.status(500).json({ message: "Falha ao criar empréstimo." });
+        }
+
+        await EmprestimoService.adiciona_dados_emprestimoService(req.body, emprestimo);
+
+        res.status(201).send(emprestimo);
+
+    } catch (err) {
+        console.error("Erro ao criar empréstimo:", err);
+        res.status(500).send({ message: "Erro interno no servidor. Tente novamente mais tarde." });
+    }
+};
 
     
     const findAllByEspacoUFSC = async (req, res) => {
@@ -171,15 +146,6 @@ import PatrimonioService from '../services/Patrimonio.Service.js';
         await emprestimo.save();
     };
 
-    const addPatrimonio = async (id, patrimonio) => {
-        const emprestimo = await EmprestimoService.findByIdService(id);
-        if (!emprestimo) {
-            throw new Error("Emprestimo não encontrado no banco de dados.");
-        }
-        emprestimo.patrimonio.push(patrimonio);
-        await emprestimo.save();
-    }
-
     
 export default {
         create,
@@ -188,5 +154,5 @@ export default {
         DeleteEmprestimobyId,
         EmprestimoByUserAluno,
         addAluno,
-        addPatrimonio,
+        
 };

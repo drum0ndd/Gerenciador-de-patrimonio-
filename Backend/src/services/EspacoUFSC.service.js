@@ -15,20 +15,26 @@ const findByIdService = (id) => EspacoUFSC.findById(id);
 
 const DeleteEspacoUFSCbyId = (id) => EspacoUFSC.findByIdAndDelete(id);
 
-const addEmprestimo = async (id, emprestimo) => {
-    const espaco = await EspacoUFSC.findById(id);
-    if (!espaco) {
-        throw new Error("Espaço UFSC não encontrado no banco de dados.");
-    }    
-};   
-
-const addPatrimonio = async (id, patrimonio) => {
-    const espaco = await EspacoUFSC.findById(id);
-    if (!espaco) {
+const addEmprestimo = async (validEspacoUFSC, emprestimo) => {
+    if (!validEspacoUFSC) {
         throw new Error("Espaço UFSC não encontrado no banco de dados.");
     }
-    espaco.lista_patrimonios.push(patrimonio);
-    await espaco.save();
+    if (!Array.isArray(validEspacoUFSC.emprestimos)) {
+        validEspacoUFSC.emprestimos = [];
+    }
+    validEspacoUFSC.emprestimos.push(emprestimo);
+    await validEspacoUFSC.save();   
+};   
+
+const addPatrimonio = async (patrimonio, emprestimo) => {
+    if (!patrimonio) {
+        throw new Error("Patrimonio não encontrado no banco de dados.");
+    }
+    if (!Array.isArray(emprestimo.lista_patrimonios)) {
+        emprestimo.lista_patrimonios = [];
+    }
+    patrimonio.emprestimos.push(emprestimo);
+    await patrimonio.save();
 };
 
 

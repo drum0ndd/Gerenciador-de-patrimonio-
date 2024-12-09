@@ -7,7 +7,7 @@ const EmprestimoSchema = new mongoose.Schema({
     espacoUFSC: { type: String , required: true },
     matricula_professor: { type: Number , required: true },
     matricula_aluno: { type: Number , required: true },
-    codigo_patrimonio: { type: Number , required: true },
+    codigo_patrimonio: { type: String , required: true },
     data_registro: { type: Date, required: true },
     descricao: { type: String, required: false }, //não obrigatório
 }, {

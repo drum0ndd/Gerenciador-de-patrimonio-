@@ -41,6 +41,19 @@ const findAllByEspacoUFSCService = async (espacoUFSC) => {
     return await EmprestimoModel.find({ espacoUFSC }); // Considerando Mongoose
 };
 
+const adiciona_dados_emprestimoService = async (req, emprestimo, res) => {
+    const { espacoUFSC, matricula_professor, matricula_aluno, codigo_patrimonio, data_registro, descricao } = req;
+
+    emprestimo.espacoUFSC = espacoUFSC;
+    emprestimo.matricula_professor = matricula_professor;
+    emprestimo.matricula_aluno = matricula_aluno;
+    emprestimo.codigo_patrimonio = codigo_patrimonio;
+    emprestimo.data_registro = data_registro;
+    emprestimo.descricao = descricao;
+
+    await emprestimo.save();
+}
+
 
 export default {
     createEmprestimo,
@@ -48,5 +61,6 @@ export default {
     findByIdService,
     DeleteService,
     EmprestimoByUserAlunoService,
-    findAllByEspacoUFSCService
+    findAllByEspacoUFSCService,
+    adiciona_dados_emprestimoService
 };
