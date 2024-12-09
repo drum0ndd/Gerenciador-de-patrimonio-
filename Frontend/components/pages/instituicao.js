@@ -12,14 +12,14 @@ import {
   CardContent, 
   CardHeader, 
   CardTitle 
-} from '@/components/ui/card.jsx';
+} from '../ui/card';
 import { 
   Dialog, 
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
   DialogTrigger 
-} from "@/components/ui/dialog.jsx";
+} from "../ui/dialog";
 
 const InstitutionRooms = () => {
   const [rooms, setRooms] = useState([

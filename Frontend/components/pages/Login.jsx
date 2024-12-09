@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AlertCircle, User, BookOpen, Lock, Mail } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert.jsx';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card.jsx';
+import { Alert, AlertDescription } from '../ui/alert';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import {
   Dialog,
   DialogContent,
