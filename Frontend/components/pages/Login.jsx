@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/";
+} from "../ui/dialog";
 
 const LoginPage = () => {
   const [loginType, setLoginType] = useState('professor'); // 'professor' or 'student'
