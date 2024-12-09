@@ -1,5 +1,5 @@
 import PatrimonioService from '../services/Patrimonio.Service.js';
-import EspacoUFSCService from '../services/espacoUFSC.service.js';
+import EspacoUFSCService from '../services/EspacoUFSC.service.js';
 
 const create = async (req, res) => {
     try { const{ codigo_patrimonio, nome, id_espacoUFSC, responsavel_espacoUFSC, estado, dataRegistro, descricao } = req.body;
