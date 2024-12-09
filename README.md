@@ -18,6 +18,15 @@ A aplicação está hospedada no servidor RENDER e pode ser acessada pelo link a
 Link: https://gerenciador-de-patrimonio-ufsc.onrender.com/
 Link para login: https://gerenciador-de-patrimonio-ufsc.onrender.com/auth
 
+## Como Subir o projeto
+
+Ao baixa-lo, é necessário usar o comando "NPM I install" para baixar todas as dependencias do projeto que estão no package.json.
+Logo após, rodar:
+
+"NPM run dev" ou "NPM start" 
+
+Para iniciar o backend na pasta principal do projeto: "Gerenciado-de-patrimonio-"
+
 ## Integrantes
 - Arthur Paulo Rodrigues (23100747)
 - Guilherme Drumond da Silva (23200513)
