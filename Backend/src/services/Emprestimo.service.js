@@ -1,4 +1,4 @@
-import Emprestimo from '../models/Emprestimo.js';
+import Emprestimo from '../Models/Emprestimo.js';
 import User from '../Models/User.js';
 import {isProfessor, validEspacoUFSC} from '../middlewares/global.middlewares.js';
 
